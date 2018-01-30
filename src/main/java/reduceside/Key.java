@@ -19,8 +19,8 @@ public class Key implements WritableComparable<Key> {
     public IntWritable recordType = new IntWritable();
 
     public Key(){}
-    public Key(int productId, IntWritable recordType) {
-        this.studentId.set(productId);
+    public Key(int studentId, IntWritable recordType) {
+        this.studentId.set(studentId);
         this.recordType = recordType;
     }
 
@@ -42,8 +42,15 @@ public class Key implements WritableComparable<Key> {
         }
     }
 
-    public boolean equals (Key other) {
-        return this.studentId.equals(other.studentId) && this.recordType.equals(other.recordType );
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Key key = (Key) o;
+
+        if (!studentId.equals(key.studentId)) return false;
+        return recordType.equals(key.recordType);
     }
 
     public int hashCode() {

@@ -36,8 +36,7 @@ public class Driver extends Configured implements Tool {
     }
 
     public static class JoinSortingComparator extends WritableComparator {
-        public JoinSortingComparator()
-        {
+        public JoinSortingComparator() {
             super (Key.class, true);
         }
 
@@ -79,7 +78,7 @@ public class Driver extends Configured implements Tool {
         }
     }
 
-    public static class JoinRecuder extends Reducer<Key, JoinGenericWritable, NullWritable, Text> {
+    public static class JoinReducer extends Reducer<Key, JoinGenericWritable, NullWritable, Text> {
         public void reduce(Key key, Iterable<JoinGenericWritable> values, Context context) throws IOException, InterruptedException{
             StringBuilder studentOutput = new StringBuilder();
             StringBuilder bookOutput = new StringBuilder();
@@ -91,14 +90,14 @@ public class Driver extends Configured implements Tool {
                     studentOutput.append(Integer.parseInt(key.studentId.toString())).append(", ");
                     studentOutput.append(sRecord.studentFirstName.toString()).append(", ");
                     studentOutput.append(sRecord.studentLastName.toString()).append(", ");
-                    studentOutput.append(sRecord.studentAge.toString()).append(", ");
+                    studentOutput.append(sRecord.studentAge.toString());
                 } else {
                     BookRecord bRecord = (BookRecord) record;
                     bookOutput.append(bRecord.bookName.toString());
                 }
             }
 
-            context.write(NullWritable.get(), new Text(studentOutput.toString() + ", " + bookOutput.toString()));
+            context.write(NullWritable.get(), new Text(studentOutput.toString() + " - " + bookOutput.toString()));
         }
     }
 
@@ -116,7 +115,7 @@ public class Driver extends Configured implements Tool {
         MultipleInputs.addInputPath(job, new Path("hdfs://sandbox-hdp.hortonworks.com:8020/user/admin/booksData.csv"), TextInputFormat.class, BookMapper.class);
         MultipleInputs.addInputPath(job, new Path("hdfs://sandbox-hdp.hortonworks.com:8020/user/admin/studentsData.csv"), TextInputFormat.class, StudentMapper.class);
 
-        job.setReducerClass(JoinRecuder.class);
+        job.setReducerClass(JoinReducer.class);
 
         job.setSortComparatorClass(JoinSortingComparator.class);
         job.setGroupingComparatorClass(JoinGroupingComparator.class);
